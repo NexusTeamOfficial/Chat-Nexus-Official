@@ -75,3 +75,79 @@ window.showLogin = () => {
   signupBox.classList.add("hidden");
   loginBox.classList.remove("hidden");
 };
+
+import { getFirestore, doc, setDoc, getDocs, getDoc, collection, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// 🔹 Home Page Functions
+const auth = getAuth();
+const db = getFirestore();
+
+// Check auth on home.html
+if (window.location.pathname.endsWith("home.html")) {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+    } else {
+      loadChats(user.uid);
+    }
+  });
+
+  // Search users
+  const searchBtn = document.getElementById("search-btn");
+  const searchBox = document.getElementById("search-box");
+  const searchInput = document.getElementById("search-input");
+  const searchResults = document.getElementById("search-results");
+
+  searchBtn.onclick = () => {
+    searchBox.classList.toggle("hidden");
+  };
+
+  searchInput.addEventListener("input", async () => {
+    searchResults.innerHTML = "";
+    const q = searchInput.value.toLowerCase();
+    if (q.trim() === "") return;
+
+    const usersSnap = await getDocs(collection(db, "users"));
+    usersSnap.forEach(docSnap => {
+      const u = docSnap.data();
+      if (u.name.toLowerCase().includes(q)) {
+        const div = document.createElement("div");
+        div.className = "user-item";
+        div.innerHTML = `
+          <span>${u.name} <small>${u.bio || ""}</small></span>
+          <button data-id="${docSnap.id}" class="follow-btn">Follow</button>
+        `;
+        searchResults.appendChild(div);
+      }
+    });
+
+    // Follow/Unfollow
+    document.querySelectorAll(".follow-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const targetId = btn.getAttribute("data-id");
+        const me = auth.currentUser.uid;
+        const ref = doc(db, "follows", me + "_" + targetId);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) {
+          await updateDoc(ref, { active: !snap.data().active });
+          btn.textContent = snap.data().active ? "Follow" : "Unfollow";
+        } else {
+          await setDoc(ref, { from: me, to: targetId, active: true });
+          btn.textContent = "Unfollow";
+        }
+      };
+    });
+  });
+
+  // Load recent chats
+  async function loadChats(uid) {
+    const chatList = document.getElementById("chat-list");
+    chatList.innerHTML = "<h3>Recent Chats</h3>";
+
+    // (Later step → messages collection se fetch karenge)
+    chatList.innerHTML += `<div class="chat-item">No chats yet</div>`;
+  }
+  }
+                                              
