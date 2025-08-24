@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NexusChat - Chat</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="topbar" id="chat-topbar">
+    <button onclick="history.back()">⬅</button>
+    <div id="chat-user-info">
+      <h3 id="chat-username">Loading...</h3>
+      <small id="chat-status">last seen...</small>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div id="messages-box"></div>
+
+  <!-- Bottom Bar -->
+  <div class="chat-input">
+    <input type="text" id="message-input" placeholder="Type a message...">
+    <button id="send-btn">➡️</button>
+  </div>
+</body>
+</html>
