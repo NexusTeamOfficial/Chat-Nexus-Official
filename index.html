@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NexusChat - Login</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>NexusChat</h1>
+
+    <!-- Login Form -->
+    <div id="login-box" class="box">
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email">
+      <input type="password" id="login-password" placeholder="Password">
+      <button id="login-btn">Login</button>
+      <p>New user? <a href="#" onclick="showSignup()">Sign Up</a></p>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signup-box" class="box hidden">
+      <h2>Sign Up</h2>
+      <input type="email" id="signup-email" placeholder="Email">
+      <input type="password" id="signup-password" placeholder="Password">
+      <button id="signup-btn">Sign Up</button>
+      <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+
+    <!-- Account Setup -->
+    <div id="setup-box" class="box hidden">
+      <h2>Setup Profile</h2>
+      <input type="text" id="setup-name" placeholder="Full Name">
+      <input type="text" id="setup-bio" placeholder="Bio (default: Hey, I'm using NexusChat)">
+      <button id="setup-btn">Save</button>
+    </div>
+  </div>
+</body>
+</html>
