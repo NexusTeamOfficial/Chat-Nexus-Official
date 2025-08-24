@@ -91,3 +91,71 @@ button:hover {
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
+
+#messages-box {
+  padding: 10px;
+  height: 70vh;
+  overflow-y: auto;
+  background: #f7f7f7;
+}
+
+.message {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin: 6px;
+  display: inline-block;
+  position: relative;
+}
+
+.message-left {
+  background: #e4e6eb;
+  text-align: left;
+  border-bottom-left-radius: 0;
+}
+
+.message-right {
+  background: #2196F3;
+  color: white;
+  text-align: right;
+  border-bottom-right-radius: 0;
+  margin-left: auto;
+}
+
+.msg-time {
+  font-size: 10px;
+  opacity: 0.7;
+  display: block;
+  margin-top: 4px;
+}
+
+.chat-input {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  background: white;
+  border-top: 1px solid #ddd;
+  padding: 8px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+}
+
+.chat-input button {
+  margin-left: 8px;
+  border: none;
+  background: #2196F3;
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  }
+    
