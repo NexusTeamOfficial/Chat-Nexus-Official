@@ -151,3 +151,94 @@ if (window.location.pathname.endsWith("home.html")) {
   }
   }
                                               
+import { getFirestore, doc, setDoc, addDoc, collection, query, orderBy, onSnapshot, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// 🔹 Chat Page Functions
+if (window.location.pathname.endsWith("chat.html")) {
+  const auth = getAuth();
+  const db = getFirestore();
+
+  // Get chat partner ID from URL (?id=xxxxx)
+  const urlParams = new URLSearchParams(window.location.search);
+  const partnerId = urlParams.get("id");
+
+  const messagesBox = document.getElementById("messages-box");
+  const msgInput = document.getElementById("message-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+    } else {
+      loadPartnerInfo(partnerId);
+      loadMessages(user.uid, partnerId);
+
+      sendBtn.onclick = async () => {
+        if (msgInput.value.trim() === "") return;
+        const msgText = msgInput.value;
+        msgInput.value = "";
+
+        await addDoc(collection(db, "messages"), {
+          from: user.uid,
+          to: partnerId,
+          text: msgText,
+          createdAt: serverTimestamp(),
+          seen: false
+        });
+      };
+    }
+  });
+
+  // Load partner info (name + last seen)
+  async function loadPartnerInfo(uid) {
+    const userRef = doc(db, "users", uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) {
+      document.getElementById("chat-username").innerText = snap.data().name;
+      document.getElementById("chat-status").innerText = snap.data().bio || "last seen recently";
+    }
+  }
+
+  // Load messages
+  function loadMessages(myId, partnerId) {
+    const q = query(collection(db, "messages"), orderBy("createdAt"));
+    onSnapshot(q, (snapshot) => {
+      messagesBox.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        const m = docSnap.data();
+        if (
+          (m.from === myId && m.to === partnerId) ||
+          (m.from === partnerId && m.to === myId)
+        ) {
+          const div = document.createElement("div");
+          div.className = "message " + (m.from === myId ? "message-right" : "message-left");
+          div.innerHTML = `
+            ${m.text}
+            <span class="msg-time">${formatTime(m.createdAt)} ${m.from === myId ? seenIcon(m.seen) : ""}</span>
+          `;
+          messagesBox.appendChild(div);
+
+          // Auto-scroll
+          messagesBox.scrollTop = messagesBox.scrollHeight;
+
+          // Mark as seen
+          if (m.to === myId && !m.seen) {
+            updateDoc(doc(db, "messages", docSnap.id), { seen: true });
+          }
+        }
+      });
+    });
+  }
+
+  // Helpers
+  function formatTime(ts) {
+    if (!ts) return "";
+    const date = ts.toDate();
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function seenIcon(seen) {
+    return seen ? "✔✔" : "✔";
+  }
+}
