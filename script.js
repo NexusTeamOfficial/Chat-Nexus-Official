@@ -79,8 +79,43 @@ if (window.location.pathname.endsWith("home.html")) {
       window.location.href = "index.html";
     } else {
       loadChats(user.uid);
+
+      // FAB click -> show people
+      const fab = document.getElementById("fab");
+      fab.onclick = () => showPeople(user.uid);
     }
   });
+
+  async function showPeople(myId) {
+    const peopleBox = document.createElement("div");
+    peopleBox.id = "people-box";
+    peopleBox.innerHTML = "<h3>All People</h3>";
+
+    const usersSnap = await getDocs(collection(db, "users"));
+    usersSnap.forEach(docSnap => {
+      const u = docSnap.data();
+      if (docSnap.id !== myId) {
+        const div = document.createElement("div");
+        div.className = "user-item";
+        div.innerHTML = `
+          <span>${u.name} <small>${u.bio || ""}</small></span>
+          <button data-id="${docSnap.id}" class="chat-btn">Chat</button>
+        `;
+        peopleBox.appendChild(div);
+      }
+    });
+
+    document.body.appendChild(peopleBox);
+
+    document.querySelectorAll(".chat-btn").forEach(btn => {
+      btn.onclick = () => {
+        const partnerId = btn.getAttribute("data-id");
+        window.location.href = "chat.html?id=" + partnerId;
+      };
+    });
+  }
+}
+
 
   const searchBtn = document.getElementById("search-btn");
   const searchBox = document.getElementById("search-box");
