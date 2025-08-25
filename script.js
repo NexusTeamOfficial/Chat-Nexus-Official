@@ -248,5 +248,4 @@ if (window.location.pathname.endsWith("chat.html")) {
   function seenIcon(seen) {
     return seen ? "✔✔" : "✔";
   }
-      }
   
